@@ -1,0 +1,22 @@
+.day-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.arrow-btn {
+  background-color: transparent;
+  border: none;
+  color: #525560;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.selected-day {
+    font-size: 1rem;
+    font-family: sans-serif;
+}

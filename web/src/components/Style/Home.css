@@ -1,0 +1,128 @@
+.coordinate-container {
+    padding: 1rem;
+    border-radius: 8px;
+    color: white;
+}
+.menu-container {
+    padding: 1rem;
+    border-radius: 8px;
+    color: white;
+}
+
+.home-primary {
+    color: #FF1A35;
+    font-size: 22px;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    cursor: pointer;
+}
+
+.home-header h1 {
+    text-align: center;
+    font-size: 1rem;
+    margin: 0;
+    margin-left: 1rem;
+    width: 100%;
+}
+
+.coordinates-info,
+.time-weather-info {
+    margin-top: 1rem;
+}
+
+.coordinate-item,
+.time-weather-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.coordinate-value,
+.time-setting,
+.weather-setting {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.apply-button {
+    background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
+    color: white;
+    padding: 0.5rem 3rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.apply-button:hover {
+    background-color: #e62e2e;
+}
+
+.weather-change {
+    background-color: #333;
+    color: white;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.coordinate-item label {
+    font-size: 1rem;
+    color: #999;
+    font-family: sans-serif;
+}
+.time-weather-info label {
+    font-size: 1rem;
+    color: #999;
+    font-family: sans-serif;
+}
+
+.coordinate-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #333;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: #fff;
+    font-family: sans-serif;
+}
+
+.copy-icon {
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+.copy-icon:hover {
+    color: #fff;
+}
+
+input {
+    background: #0e0f13;
+    outline: none;
+    color: white;
+    border: none;
+}
+
+input:focus {
+    outline: none;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}

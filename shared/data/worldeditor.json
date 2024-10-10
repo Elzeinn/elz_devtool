@@ -1,0 +1,9 @@
+{
+    "presets": {
+        "1": {
+            "label": "Preset 1",
+            "name": "Preset 1",
+            "objects": []
+        }
+    }
+}

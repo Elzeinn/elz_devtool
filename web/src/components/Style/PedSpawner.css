@@ -1,0 +1,131 @@
+.ped-spawner-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative; 
+    padding-bottom: 0.5rem; 
+}
+
+.ped-spawner-header i {
+    position: absolute; 
+    top: 0; 
+    right: 0; 
+    margin-right: 1rem;
+    cursor: pointer;
+}
+
+.data-ped-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.data-ped-container i {
+    font-size: 14px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.pedArrow {
+    display: flex;
+    margin-top: -3rem;
+    justify-content: end;
+    align-items: end;    
+    position: relative;
+    margin-right: 1rem;
+}
+
+.pedTrash {
+    position: absolute;
+    left: 27%;
+    top: 20.5%;
+    transform: translate(-50%, -50%);
+    margin-right: 1rem;
+    cursor: pointer;
+  
+}
+
+.data-ped-container h1 {
+    color: white;
+    font-family: sans-serif;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+}
+
+.data-ped-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #333;
+    padding: 1.5rem;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.ped-data-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.ped-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    color: white;
+}
+
+.ped-data-item label {
+    font-size: 1rem;
+    color: #999;
+    margin-right: auto; 
+}
+
+.ped-data-item div {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ped-data-item i {
+    font-size: 18px;
+    color: #FF1A35;
+    cursor: pointer;
+}
+
+.ped-spawner-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.ped-spawner-buttons button {
+    background-color: #FF1A35;
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.ped-spawner-buttons button:hover {
+    background-color: #A01F2E;
+}
+
+#create-ped {
+    background-color: #FF1A35;
+    color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+#create-ped:hover {
+    background-color: #A01F2E;
+}

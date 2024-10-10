@@ -1,0 +1,92 @@
+.prop-tools {
+    background-color: #0e0f13;
+    padding: 1rem;
+    border-radius: 8px;
+    color: white;
+}
+
+.prop-tools-header {
+    width: 100%;
+    margin-left: -1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+
+.prop-tools-header  i {
+    margin-left: 1rem;
+    font-size: 20px;
+}
+
+.prop-tools-header h1 {
+    font-family: sans-serif;
+    font-size: 1rem;
+    color: white;
+    margin-left: 2rem;  
+}
+
+.prop-tools-content {
+    padding: 1rem;
+    border-radius: 8px;
+    color: white;
+    
+}
+
+.prop-tools-model {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: #fff;
+    
+    height: 3rem;
+    font-family: sans-serif;
+   
+}
+
+input {
+    border: 1px solid #3a3a3a;
+    background: #0e0f13;
+    outline: none; 
+    padding: 1rem;
+    color: white;
+    text-align: center;
+}
+
+select {
+    border: 1px solid #3a3a3a;
+    background: #0e0f13;
+    outline: none; 
+    padding: 1rem;
+    color: white;
+    text-align: center;
+}
+
+.btn {
+    background: #0e0f13;
+    outline: none; 
+    padding: 1rem;
+    color: white;
+    margin-left: -1rem;
+   
+}
+
+.btn button {
+    background-color: #0F1014;
+    outline: none; 
+    padding: 1.5rem;
+    color: white;
+    width: 50%;
+    cursor: pointer;
+}
+
+.btn .copy {
+    background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
+}
+
+.propPrimary {
+    color: #FF1A35;
+} 
