@@ -1,39 +1,97 @@
-local function readJSONFile()
-    local content = LoadResourceFile('17MovementTools', 'shared/data/worldeditor.json')
-    return json.decode(content) or { presets = {} }
+-- Variable
+local ServerCallback = {}
+
+-- Function
+local function CreateCallback(name, cb)
+    ServerCallback[name] = cb
+end
+
+local function TriggerCallback(name, source, cb, ...)
+    if not ServerCallback[name] then return end
+    ServerCallback[name](source, cb, ...)
+end
+
+local function formatTimecycles(timecycles)
+    local formatedTimecycles = {}
+
+    for i = 1, #timecycles do
+        local v = timecycles[i]
+        local found
+        for j = 1, #formatedTimecycles do
+            if formatedTimecycles[j].label == v.Name then
+                found = true
+                break
+            end
+        end
+        if not found then
+            table.insert(formatedTimecycles, { label = v.Name, value = tostring(joaat(v.Name)) })
+        end
+    end
+    table.sort(formatedTimecycles, function(a, b) return a.label < b.label end)
+    return formatedTimecycles
+end
+
+local function getFileData(path, file)
+    return json.decode(LoadResourceFile(GetCurrentResourceName(), path .. '/' .. file))
 end
 
 local function writeJSONFile(data)
     local jsonData = json.encode(data, { indent = true })
-    SaveResourceFile('17MovementTools', '/shared/data/worldeditor.json', jsonData, -1)
+    SaveResourceFile(GetCurrentResourceName(), '/shared/data/worldeditor.json', jsonData, -1)
 end
 
-lib.callback.register('elz_scripts:server:setTimeSync', function(source, data)
+-- Event Callback
+RegisterNetEvent('elz_scripts:server:triggerCallback', function(name, ...)
+    local src = source
+    TriggerCallback(name, src, function(...)
+        TriggerClientEvent('elz_scripts:client:triggerCallback', src, name, ...)
+    end, ...)
+end)
+
+-- Weather Section --
+
+CreateCallback('elz_scripts:server:getTimeCycle', function(source, cb)
+    cb(formatTimecycles(getFileData('shared/data', 'timecycle.json')))
+end)
+
+CreateCallback('elz_scripts:server:setTimeSync', function(source, cb, data)
     if data then
         TriggerClientEvent('elz_scripts:client:syncTime', -1, data)
-        return true
+        cb(true)
     end
-    return false
+    cb(false)
 end)
 
-lib.callback.register('elz_scripts:server:setWeatherSync', function(source, data)
+CreateCallback('elz_scripts:server:setWeatherSync', function(source, cb, data)
     if data.weather then
         TriggerClientEvent('elz_scripts:client:syncWeather', -1, data.weather)
-        return true
+        cb(true)
     end
-    return false
+    cb(false)
 end)
 
-lib.callback.register('elz_scripts:server:setFreezeTime', function(source, data)
+CreateCallback('elz_scripts:server:setFreezeTime', function(source, cb, data)
     if data.time and data.freeze then
         TriggerClientEvent('elz_scripts:client:setFreezeTime', -1, data.time, data.freeze)
-        return true
+        cb(true)
     end
-    return false
+    cb(false)
 end)
 
-lib.callback.register('elz_scripts:server:savePreset', function(source, data)
-    local database = readJSONFile()
+-- End Weather Section
+
+
+
+-- World Editor Section
+
+CreateCallback('elz_scripts:server:GetDataWorld', function(source, cb)
+    for k, v in pairs(getFileData('shared/data', 'worldeditor.json')) do
+        cb(v)
+    end
+end)
+
+CreateCallback('elz_scripts:server:savePreset', function(source, cb, data)
+    local database = getFileData('shared/data', 'worldeditor.json')
     if type(database.presets) ~= "table" then
         database.presets = {}
     end
@@ -46,21 +104,25 @@ lib.callback.register('elz_scripts:server:savePreset', function(source, data)
         }
     end
     writeJSONFile(database)
-    local options = {}
-    for id, preset in pairs(database.presets) do
-        table.insert(options, {
-            id = id,
-            name = preset.name
-        })
-    end
-
-    return options
+    Wait(100)
+    cb(database)
 end)
 
-lib.callback.register('saveCopiedObject', function(source, data)
-    local database = readJSONFile()
-    local presetFound = false
+CreateCallback('elz_scripts:server:removePreset', function(source, cb, id)
+    local database = getFileData('shared/data', 'worldeditor.json')
+    for k, v in pairs(database.presets) do
+        if tonumber(k) == tonumber(id) then
+            database.presets[k] = nil
+            break
+        end
+    end
+    writeJSONFile(database)
+    cb(true)
+end)
 
+CreateCallback('elz_scripts:server:saveCopiedObject', function(source, cb, data)
+    local database = getFileData('shared/data', 'worldeditor.json')
+    local presetFound = false
     for _, preset in ipairs(database.presets) do
         if preset.id == data.presetId then
             presetFound = true
@@ -83,45 +145,26 @@ lib.callback.register('saveCopiedObject', function(source, data)
     end
 end)
 
-lib.callback.register('elz_scripts:server:saveObjectPrest', function(source, data)
-    local presetId = tostring(data.preset.id)
-    local newObject = data.dataObjects
-    local database = readJSONFile()
-    if database.presets[presetId] then
-        if not database.presets[presetId].objects then
-            database.presets[presetId].objects = {}
-        end
-        local objectCount = #database.presets[presetId].objects + 1
-        newObject.id = objectCount
-        table.insert(database.presets[presetId].objects, newObject)
-        writeJSONFile(database)
-        return { success = true, message = "Object added and saved successfully!" }
-    else
-        return { success = false, message = "Preset not found!" }
-    end
-end)
-
-lib.callback.register('deleteObject', function(source, data)
-    local database = readJSONFile()
+CreateCallback('elz_scripts:server:deleteObject', function(source, cb, data)
+    local database = getFileData('shared/data', 'worldeditor.json')
     local presetId = tostring(data.presetId)
-    local objectId = data.objectId
     local presetFound = false
     local objectDeleted = false
-
     if database.presets[presetId] then
         presetFound = true
         local preset = database.presets[presetId]
-
-        for i, obj in ipairs(preset.objects) do
-            if obj.id == objectId then
-                table.remove(preset.objects, i)
-                obj[i] = {}
+        for k, v in pairs(preset.objects) do
+            if not v.entity then
+                print('not entity')
+                return
+            end
+            if v.entity == data.entity then
+                database.presets[presetId].objects[k] = nil
                 objectDeleted = true
                 break
             end
         end
     end
-
     if presetFound and objectDeleted then
         writeJSONFile(database)
         return { success = true, message = "Object deleted successfully!" }
@@ -132,46 +175,39 @@ lib.callback.register('deleteObject', function(source, data)
     end
 end)
 
-lib.callback.register('elz_scripts:server:getPreset', function(source)
+CreateCallback('elz_scripts:server:saveObjectPreset', function(source, cb, data)
+    local presetId = tostring(data.preset.id)
+    local database = getFileData('shared/data', 'worldeditor.json')
+    local newObject = data.dataObjects[presetId].objects
+    if database.presets[presetId] then
+        if not database.presets[presetId].objects then
+            database.presets[presetId].objects = {}
+        end
+        database.presets[presetId].objects = newObject
+        writeJSONFile(database)
+        return { success = true, message = "Object updated and saved successfully!" }
+    else
+        return { success = false, message = "Preset not found!" }
+    end
+end)
+
+CreateCallback('elz_scripts:server:getPreset', function(source, cb)
     local option = {}
-    for k, v in pairs(readJSONFile().presets) do
+    local fileData = getFileData('shared/data', 'worldeditor.json')
+    for k, v in pairs(fileData.presets) do
         option[k] = {
             id = k,
             name = v.name
         }
     end
-    return option
+    cb(option)
 end)
 
-lib.callback.register('elz_scripts:server:getDataPreset', function(source)
-    local database = readJSONFile()
-    local dataObjectName = {}
-    for object, value in pairs(database.presets) do
-        dataObjectName[#dataObjectName + 1] = {
-            id = object,
-            name = value.label,
-        }
-    end
-    return dataObjectName
+CreateCallback('elz_scripts:server:getAllObjectList', function(source, cb)
+    local database = getFileData('shared/data', 'worldeditor.json')
+    cb(database.presets)
 end)
 
-lib.callback.register('elz_scripts:server:getPresetObjectFromId', function(source, dataId)
-    local database = readJSONFile()
-    local objects = {}
-    local presetId = tostring(tonumber(dataId))
-    if database.presets[presetId] and database.presets[presetId].objects then
-        objects = database.presets[presetId].objects
-    end
-    return objects
-end)
 
-lib.callback.register('elz_scripts:server:removePreset', function(source, id)
-    local database = readJSONFile()
-    for k, v in pairs(database.presets) do
-        if tonumber(k) == tonumber(id) then
-            database.presets[k] = nil
-            break
-        end
-    end
-    writeJSONFile(database)
-end)
+
+-- End World Editor Section

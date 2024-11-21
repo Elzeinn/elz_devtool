@@ -1,21 +1,30 @@
-import React, { useState } from "react";
-import "../Style/Home.css"; 
+import React, { useState, useEffect } from "react";
 import { fetchNui } from "../../utils/fetchNui";
 import { useNuiEvent } from "../../hooks/useNuiEvent";
-import '../Style/PedSpawner.css'
+import "../Style/PedSpawner.css";
 import InputForm from "../Elements/InputForm";
+import pedIcon from "../assets/pedSpawner.svg";
+import pedIcon2 from "../assets/pedSpawnColor.svg";
+import trashIcon2 from "../assets/trashIcon2.svg";
+import copyIcon from "../assets/copyIcon.svg";
 
-function PedSpawner() {
+function PedSpawner({ pedCoords }) {
   const [showInputForm, setShowInputForm] = useState(false);
-  const [peds, setPeds] = useState([]);
-  const [gizmoData, setGizmoData] = useState(null); // State untuk menyimpan data gizmo
+  const [peds, setPeds] = useState(() => {
+    const savedPeds = localStorage.getItem("peds");
+    return savedPeds ? JSON.parse(savedPeds) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("peds", JSON.stringify(peds));
+  }, [peds]);
 
   const copyToClipboard = (data) => {
     fetchNui("copyDataPed", data);
   };
 
   const handleCreatePedClick = () => {
-    setShowInputForm(true); 
+    setShowInputForm(true);
   };
 
   const handleApplyChanges = (ped) => {
@@ -25,12 +34,11 @@ function PedSpawner() {
         name: ped.name,
         coordinates: ped.coordinates,
         animation: {
-          dict: ped.animationDict,  // Ambil dari state ped
-          clip: ped.animationClip    // Ambil dari state ped
-        }
-      }
+          dict: ped.animationDict,
+          clip: ped.animationClip,
+        },
+      },
     });
-    console.log("Apply Changes clicked for", ped.model);
   };
 
   const handleInputFormSubmit = (data) => {
@@ -38,18 +46,18 @@ function PedSpawner() {
       model: data.model,
       name: data.name,
       coordinates: data.position,
-      animationDict: "", // State untuk dictionary animasi
-      animationClip: "", // State untuk clip animasi
-      isCoordinateOpen: false, 
+      animationDict: "",
+      animationClip: "",
+      isCoordinateOpen: false,
     };
-    setPeds([...peds, newPed]); 
-    setShowInputForm(false); 
+    setPeds([...peds, newPed]);
+    setShowInputForm(false);
   };
 
   const toggleCoordinateMenu = (index) => {
     const updatedPeds = peds.map((ped, idx) => {
       if (idx === index) {
-        return { ...ped, isCoordinateOpen: !ped.isCoordinateOpen }; 
+        return { ...ped, isCoordinateOpen: !ped.isCoordinateOpen };
       }
       return ped;
     });
@@ -58,46 +66,47 @@ function PedSpawner() {
 
   const handleDeletePed = (index) => {
     const updatedPeds = [...peds];
-    updatedPeds.splice(index, 1); 
+    updatedPeds.splice(index, 1);
     setPeds(updatedPeds);
   };
 
   const showGizmo = (data) => {
-    fetchNui("showGizmo", data)};
+    fetchNui("showGizmo", data);
+  };
 
-  useNuiEvent('getPedPosition', (data) => {
-         setGizmoData(data);
-        console.log(JSON.stringify(data, null, 2));
-        // Update coordinates of the specific ped if needed
-        const updatedPeds = peds.map((ped) => {
-            if (ped.model === data.model) { // Sesuaikan kriteria pencarian sesuai kebutuhan
-                return {
-                    ...ped,
-                    coordinates: {
-                        coords: {
-                            x: data.position.x,
-                            y: data.position.y,
-                            z: data.position.z,
-                        },
-                        entity : data.handle,
-                        rotation: {
-                            x: data.rotation.x,
-                            y: data.rotation.y,
-                            z: data.rotation.z,
-                        },
-                    }
-                };
-            }
-            return ped;
-        });
+  useEffect(() => {
+    if (pedCoords) {
+      const data = pedCoords;
+      const updatedPeds = peds.map((ped) => {
+        if (ped.model === data.model) {
+          return {
+            ...ped,
+            coordinates: {
+              coords: {
+                x: data.position.x.toFixed(4),
+                y: data.position.y.toFixed(4),
+                z: data.position.z.toFixed(4),
+              },
+              entity: data.handle,
+              rotation: {
+                x: data.rotation.x.toFixed(4),
+                y: data.rotation.y.toFixed(4),
+                z: data.rotation.z.toFixed(4),
+              },
+            },
+          };
+        }
+        return ped;
+      });
 
-        setPeds(updatedPeds); // Update state peds dengan koordinat baru
-  })
+      setPeds(updatedPeds);
+    }
+  }, [pedCoords]);
 
   const handleAnimationChange = (index, dict, clip) => {
     const updatedPeds = peds.map((ped, idx) => {
       if (idx === index) {
-        return { ...ped, animationDict: dict, animationClip: clip }; // Update animasi
+        return { ...ped, animationDict: dict, animationClip: clip };
       }
       return ped;
     });
@@ -106,58 +115,67 @@ function PedSpawner() {
 
   return (
     <div className="ped-spawner">
-      <div className="ped-spawner-header header">
-        <i className="fa-solid fa-paw home-primary"></i>
+      <div className="ped-spawner-header">
+        <img src={pedIcon} alt="" />
         <h1>Ped Spawner</h1>
       </div>
 
       {showInputForm && (
         <div className="input-form-container">
-          <InputForm onSubmit={handleInputFormSubmit} /> 
+          <InputForm onSubmit={handleInputFormSubmit} />
         </div>
       )}
 
-      {peds.map((ped, index) => ( 
-        <div key={index} className="data-ped-container" onClick={() => toggleCoordinateMenu(index)}>
-          <h1>{ped.name}</h1>
-          <i
-            className={`pedArrow fa-solid ${ped.isCoordinateOpen ? "fa-chevron-up" : "fa-chevron-down"}`}
-          />
-          <i
-            className="pedTrash fa-solid fa-trash"
-            onClick={(e) => {
-              e.stopPropagation(); 
-              handleDeletePed(index); 
-            }}
-          />
+      {peds.map((ped, index) => (
+        <div
+          key={index}
+          className="data-ped-container"
+          onClick={() => toggleCoordinateMenu(index)}
+        >
+          <div className="ped-spawner-header">
+            <img src={pedIcon2} alt="" />
+            <h1>{ped.name}</h1>
+            <img
+              className="pedTrash"
+              src={trashIcon2}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeletePed(index);
+              }}
+              alt=""
+            />
+            <i
+              className={`pedArrow fa-solid ${
+                ped.isCoordinateOpen ? "fa-chevron-up" : "fa-chevron-down"
+              }`}
+            />
+          </div>
+
           {ped.isCoordinateOpen && (
             <div className="ped-data-info">
               <div className="ped-data-item">
                 <label>Model Id</label>
-                <div className="coordinate-value">
-                  {ped.model}
-                  <i
-                    className="fa-regular fa-copy copy-icon"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      copyToClipboard(ped.model);
-                    }}
-                  ></i>
+                <div className="modelDataValue">
+                  <p>{ped.model}</p>
                 </div>
               </div>
 
               <div className="ped-data-info">
                 <div className="ped-data-item">
                   <label>Coordinates</label>
-                  <div className="coordinate-value">
-                    {`{"x": ${ped.coordinates.coords.x}, "y": ${ped.coordinates.coords.y}, "z": ${ped.coordinates.coords.z}}`}
-                    <i
-                      className="fa-regular fa-copy copy-icon"
+                  <div className="ped-data-value">
+                    {`X: ${ped.coordinates.coords.x}, Y: ${ped.coordinates.coords.y}, Z: ${ped.coordinates.coords.z}`}
+
+                    <img
+                      src={copyIcon}
                       onClick={(e) => {
-                        e.stopPropagation(); 
-                        copyToClipboard(`{"x": ${ped.coordinates.coords.x}, "y": ${ped.coordinates.coords.y}, "z": ${ped.coordinates.coords.z}}`);
+                        e.stopPropagation();
+                        copyToClipboard(
+                          `{"x": ${ped.coordinates.coords.x}, "y": ${ped.coordinates.coords.y}, "z": ${ped.coordinates.coords.z}}`
+                        );
                       }}
-                    ></i>
+                      alt=""
+                    />
                   </div>
                 </div>
               </div>
@@ -165,58 +183,136 @@ function PedSpawner() {
               <div className="ped-data-info">
                 <div className="ped-data-item">
                   <label>Rotation</label>
-                  <div className="coordinate-value">
-                    {`{"x": ${ped.coordinates.rotation.x}, "y": ${ped.coordinates.rotation.y}, "z": ${ped.coordinates.rotation.z}}`}
-                    <i
-                      className="fa-regular fa-copy copy-icon"
-                      onClick={(e) => {
-                        e.stopPropagation(); 
-                        copyToClipboard(`{"x": ${ped.coordinates.rotation.x}, "y": ${ped.coordinates.rotation.y}, "z": ${ped.coordinates.rotation.z}}`);
-                      }}
-                    ></i>
+                  <div className="rotation-ped-value">
+                    <div className="rotation-value">
+                      <div className="rotation">
+                        <p>
+                          {" "}
+                          {`X: ${Math.floor(ped.coordinates.rotation.x)} °`}
+                        </p>
+                        <img
+                          src={copyIcon}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(
+                              `{"x": ${Math.floor(
+                                ped.coordinates.rotation.x
+                              )}°, "y": ${Math.floor(
+                                ped.coordinates.rotation.y
+                              )}, "z": ${Math.floor(
+                                ped.coordinates.rotation.z
+                              )}}`
+                            );
+                          }}
+                          alt=""
+                        />
+                      </div>
+                      <div className="rotation">
+                        <p>
+                          {" "}
+                          {`Y: ${Math.floor(ped.coordinates.rotation.y)} °`}
+                        </p>
+                        <img
+                          src={copyIcon}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(
+                              `{"x": ${Math.floor(
+                                ped.coordinates.rotation.x
+                              )}°, "y": ${Math.floor(
+                                ped.coordinates.rotation.y
+                              )}, "z": ${Math.floor(
+                                ped.coordinates.rotation.z
+                              )}}`
+                            );
+                          }}
+                          alt=""
+                        />
+                      </div>
+                      <div className="rotation">
+                        <p>
+                          {" "}
+                          {`Z: ${Math.floor(ped.coordinates.rotation.z)} °`}
+                        </p>
+                        <img
+                          src={copyIcon}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(
+                              `{"x": ${Math.floor(
+                                ped.coordinates.rotation.x
+                              )}, "y": ${Math.floor(
+                                ped.coordinates.rotation.y
+                              )}, "z": ${Math.floor(
+                                ped.coordinates.rotation.z
+                              )}}`
+                            );
+                          }}
+                          alt=""
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="prop-tools-model">
-                <label>Animation</label>
-                <input 
-                  type="text" 
-                  placeholder="Animation dict" 
-                  onChange={(e) => handleAnimationChange(index, e.target.value, ped.animationClip)} 
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
+              <div className="prop-tools-model-animation">
+                <label className="animation-label">Animation</label>
+                <input
+                  type="text"
+                  placeholder="Animation dict"
+                  onChange={(e) =>
+                    handleAnimationChange(
+                      index,
+                      e.target.value,
+                      ped.animationClip
+                    )
+                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
                   }}
                 />
-                <input 
-                  type="text" 
-                  placeholder="Animation clip" 
-                  onChange={(e) => handleAnimationChange(index, ped.animationDict, e.target.value)} 
-                  onClick={(e) => e.stopPropagation()} 
+                <input
+                  type="text"
+                  placeholder="Animation clip"
+                  onChange={(e) =>
+                    handleAnimationChange(
+                      index,
+                      ped.animationDict,
+                      e.target.value
+                    )
+                  }
+                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
-
               <div className="ped-spawner-buttons">
-                <button onClick={(e) => { 
-                  e.stopPropagation(); 
-                  handleApplyChanges(ped); // Apply Changes
-                }}>
-                  Apply Changes
+                <button
+                  className="apply-changes-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleApplyChanges(ped);
+                  }}
+                >
+                  <i class="iSaveJson fa-solid fa-floppy-disk"></i>Apply Changes
                 </button>
-                <button onClick={(e) => { 
-                  e.stopPropagation(); 
-                  showGizmo(ped); 
-                }}>
-                  Show Gizmo
+                <button
+                  className="show-gizmo-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    showGizmo(ped);
+                  }}
+                >
+                  <i class="fa-solid fa-cube"></i>Show Gismo
                 </button>
               </div>
+              <div className="seperator"></div>
             </div>
           )}
         </div>
       ))}
-      
+
       <button id="create-ped" onClick={handleCreatePedClick}>
-        Create New One
+        <i class="fa-solid fa-circle-plus crtPed"></i> Create New One
       </button>
     </div>
   );

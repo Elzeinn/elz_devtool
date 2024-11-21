@@ -6,16 +6,15 @@ Client = {
     portalLines = false,
     portalCorners = false,
     portalInfos = false,
-    interiorId = GetInteriorFromEntity(cache.ped),
+    interiorId = GetInteriorFromEntity(PlayerPedId()),
     defaultTimecycles = {},
 }
 
 CreateThread(function()
     while true do
         Wait(150)
-
-        if DoesEntityExist(cache.ped) then
-            Client.interiorId = GetInteriorFromEntity(cache.ped)
+        if DoesEntityExist(PlayerPedId()) then
+            Client.interiorId = GetInteriorFromEntity(PlayerPedId())
         else
             Client.interiorId = 0
         end
@@ -23,7 +22,7 @@ CreateThread(function()
 end)
 
 function GetInteriorData(fromThread)
-    local currentRoomHash = GetRoomKeyFromEntity(cache.ped)
+    local currentRoomHash = GetRoomKeyFromEntity(PlayerPedId())
     local currentRoomId = GetInteriorRoomIndexByHash(Client.interiorId, currentRoomHash)
     if fromThread then
         lastRoomId = currentRoomId
@@ -73,7 +72,6 @@ function GetInteriorData(fromThread)
                 flags = currentRoomId > 0 and rooms[currentRoomId].flags or { list = {}, total = 0 },
             }
         }
-
         SendReactMessage('setDataInterior', intData)
 
         Client.intData = intData
@@ -90,19 +88,15 @@ CreateThread(function()
     GetInteriorData()
 end)
 
--- Send interior data to NUI
+
 CreateThread(function()
     while true do
-        -- if Client.isMenuOpen then
         if Client.interiorId and Client.interiorId > 0 then
             GetInteriorData(true)
         else
             GetInteriorData()
             Wait(200)
         end
-        -- else
-        --     Wait(500)
-        -- end
         Wait(200)
     end
 end)
@@ -116,7 +110,7 @@ CreateThread(function()
                 local rotX, rotY, rotZ, rotW = GetInteriorRotation(Client.interiorId)
                 local interiorPosition = vec3(ix, iy, iz)
                 local interiorRotation = quat(rotW, rotX, rotY, rotZ)
-                local pedCoords = GetEntityCoords(cache.ped)
+                local pedCoords = GetEntityCoords(PlayerPedId())
 
                 for portalId = 0, GetInteriorPortalCount(Client.interiorId) - 1 do
                     local corners = {}
@@ -206,7 +200,6 @@ RegisterNUICallback('setPortalBox', function(data, cb)
     Client.portalPoly = data.portalPoly
     Client.portalLines = data.portalLines
     Client.portalCorners = data.portalCorners
-    print(Client.portalCorners, Client.portalLines, Client.portalPoly, Client.portalInfos)
     cb(1)
 end)
 
@@ -215,8 +208,11 @@ RegisterNUICallback('setTimecycle', function(data, cb)
     cb(1)
     if not data.timeCycle then return end
     Utils.setTimecycle(data.timeCycle)
+    Utils.Notification('Timecycle set to ' .. data.timeCycle)
 end)
 
 RegisterNuiCallback('copyInteriorData', function(data, cb)
-    lib.setClipboard(data)
+    cb(1)
+    Utils.setClipBoard(data)
+    Utils.Notification('Copied to clipboard')
 end)

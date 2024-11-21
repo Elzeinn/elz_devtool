@@ -1,0 +1,66 @@
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.notification {
+    font-weight: 500;
+    font-family: 'SF Pro Display', sans-serif;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa; 
+    color: #333; 
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 320px;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: slideIn 0.4s ease-out forwards;
+}
+
+.notification.hide {
+    animation: slideOut 0.4s ease-out forwards;
+}
+
+.notification span {
+    font-size: 1rem;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.close-button {
+    background: transparent;
+    border: none;
+    color: #888; 
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.close-button:hover {
+    color: #333; 
+}

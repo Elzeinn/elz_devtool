@@ -1,17 +1,20 @@
 local timeToFreeze = {}
 local freezeTime = false
 
-
 RegisterNuiCallback('setTimeWeather', function(data, cb)
-    lib.callback.await('elz_scripts:server:setTimeSync', false, data)
+    TriggerCallback('elz_scripts:server:setTimeSync', function() end, data)
+    cb('ok')
 end)
 
 RegisterNetEvent('elz_scripts:client:syncTime', function(data)
+    Utils.Notification('Time set to ' .. data.time.hours .. ':' .. data.time.minutes .. ':' .. data.time.seconds)
     NetworkOverrideClockTime(tonumber(data.time.hours), tonumber(data.time.minutes), tonumber(data.time.seconds))
 end)
 
 RegisterNuiCallback('setWeather', function(data, cb)
-    lib.callback.await('elz_scripts:server:setWeatherSync', false, data)
+    Utils.Notification('Weather set to ' .. data.weather)
+    TriggerCallback('elz_scripts:server:setWeatherSync', function() end, data)
+    cb('ok')
 end)
 
 RegisterNetEvent('elz_scripts:client:syncWeather', function(weather)
@@ -25,14 +28,9 @@ end)
 
 RegisterNuiCallback('setFreezeTime', function(data, cb)
     freezeTime = data.freeze
-    lib.callback.await('elz_scripts:server:setFreezeTime', false, data)
-end)
-
-RegisterCommand('getTime', function()
-    local hours = GetClockHours()
-    local minutes = GetClockMinutes()
-    local seconds = GetClockSeconds()
-    return { hours = hours, minutes = minutes, seconds = seconds }
+    Utils.Notification('Freeze Time set to ' .. data.time.hours .. ':' .. data.time.minutes .. ':' .. data.time.seconds)
+    TriggerCallback('elz_scripts:server:setFreezeTime', function() end, data)
+    cb('ok')
 end)
 
 RegisterNetEvent('elz_scripts:client:setFreezeTime', function(time, freeze)
@@ -46,9 +44,8 @@ end)
 
 RegisterNuiCallback('setFreezeWeather', function(data, cb)
     if not data.weather then return end
+    Utils.Notification('Weather set to ' .. data.weather)
     while data.freeze do
-        print(data.freeze)
-        print('tes')
         ClearOverrideWeather()
         ClearWeatherTypePersist()
         SetWeatherTypePersist(data.weather)
@@ -56,4 +53,5 @@ RegisterNuiCallback('setFreezeWeather', function(data, cb)
         SetWeatherTypeNowPersist(data.weather)
         Wait(5000)
     end
+    cb('ok')
 end)

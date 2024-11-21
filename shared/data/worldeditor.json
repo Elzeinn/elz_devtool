@@ -1,9 +1,55 @@
 {
     "presets": {
         "1": {
+            "objects": [
+                {
+                    "entity": 27650,
+                    "objectId": 1,
+                    "position": {
+                        "x": 24.72640609741211,
+                        "y": -1353.3858642578126,
+                        "z": 28.33030319213867
+                    },
+                    "propModel": "prop_mp_cone_02",
+                    "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                {
+                    "entity": 27906,
+                    "objectId": 2,
+                    "position": {
+                        "x": 25.06558990478515,
+                        "y": -1352.242919921875,
+                        "z": 28.32802391052246
+                    },
+                    "propModel": "prop_mp_cone_02",
+                    "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                },
+                {
+                    "entity": 28162,
+                    "objectId": 3,
+                    "position": {
+                        "x": 23.42020225524902,
+                        "y": -1359.8934326171876,
+                        "z": 28.387544631958
+                    },
+                    "propModel": "prop_mp_cone_02",
+                    "rotation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0
+                    }
+                }
+            ],
             "label": "Preset 1",
-            "name": "Preset 1",
-            "objects": []
+            "name": "Preset 1"
         }
     }
 }

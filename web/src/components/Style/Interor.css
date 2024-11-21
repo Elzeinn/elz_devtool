@@ -1,23 +1,32 @@
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); 
+    }
+}
+
 .interior-container {
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    border-radius: 8px;
     color: white;
 }
 
 .interior-container-header {
     width: 100%;
-    margin-left: -1rem;
     display: flex;
     align-items: center;
     background: #0F1014;
-    height: 4rem;
+    height: 55px;
+    animation: slideDown 0.8s ease forwards; 
 }
 
-.interior-container-header i {
-    margin-left: 1.5rem;
-    font-size: 24px;
+.interior-container-header img {
+    margin-left: 1.7rem;
+
 }
 
 .worldeditorPrimary {
@@ -25,15 +34,24 @@
 }
 
 .interior-container-header h1 {
-    font-family: sans-serif;
-    font-size: 1rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 15px;
     color: white;
-    margin-left: 2rem;  
+    font-weight: 700;
+    margin-left: 1rem;  
+}
+
+.no-data {
+    color: white;
+    font-family: 'SF Pro Display', sans-serif;
+    margin-left: 1.5rem;
+    font-weight: 700;
+    
 }
 
 .interior-card-container h1 {
-    font-family: sans-serif;
-    font-size: 1.5rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 1rem;
     color: white;
     margin-left: 2rem;  
 }
@@ -42,31 +60,41 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.2rem;
+    height: 58px;
+    animation: slideDown 0.8s ease forwards; 
 }
 
 .cuurent-interior-id-value{
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    margin-right: 1rem;
+}
+
+.cuurent-interior-id-value img {
+    cursor: pointer;
 }
 
 .current-interior-id label {
-    font-size: 1.2rem;
-    color: #999;
-    font-family: sans-serif;
-    margin-left: 0.5rem;
+    font-size: 13px;
+    color: #525560;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    margin-left: 2rem;
 }
 
 .cuurent-interior-id-value {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #333;
+    background-color: #111216;
     padding: 0.5rem;
     border-radius: 4px;
     color: #fff;
-    font-family: sans-serif;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
 }
 
 .interior-portal-debugging {
@@ -76,13 +104,22 @@
     padding: 1rem;
     border-radius: 8px;
     color: white;
+    animation: slideDown 0.8s ease forwards; 
 }
 
 .interior-portal-debugging h1 {
-    font-family: sans-serif;
-    font-size: 1.1rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 15px;
     color: white;
-     margin-left: -0.5rem;
+    margin-left: 1rem;
+}
+
+.interior-portal-debugging label {
+    font-size: 13px;
+    color: #525560;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    margin-left: 1rem;
 }
 
 .interior-option-select {
@@ -93,7 +130,14 @@
     padding: 0.5rem;
     border-radius: 4px;
     color: #999;
-    font-family: sans-serif;
+    font-family: 'SF Pro Display', sans-serif;
+}
+
+.interior-portal-card h1 {
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 1rem;
+    color: white;
+    margin-left: 2rem;  
 }
 
 .interior-portal-card i {
@@ -103,10 +147,18 @@
 }
 
 .interior-portal-card select {
-    width: 80%;
+    border: 1px solid #3a3a3a;
+    background: #0e0f13;
+    outline: none; 
+    width: 75%;
+    margin-left: 2rem;
+    padding: 0.9rem;
+    color: white;
+    text-align: start;
 }
 
 .timeCycle option {
     color: #999;
-    font-family: sans-serif;
+    font-family: 'SF Pro Display', sans-serif;
+
 }

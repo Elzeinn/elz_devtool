@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../Style/SwitchButton.css';
 
-const SwitchButton = ({ onToggle }) => {
+const SwitchButton = ({ onToggle, switchKey }) => {
   const [isOn, setIsOn] = useState(false);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem(switchKey);
+    if (savedState !== null) {
+      setIsOn(JSON.parse(savedState));
+    }
+  }, [switchKey]);
 
   const toggleSwitch = () => {
     const newStatus = !isOn;
     setIsOn(newStatus);
     onToggle(newStatus);
+    localStorage.setItem(switchKey, JSON.stringify(newStatus));
   };
 
   return (
@@ -21,7 +29,6 @@ const SwitchButton = ({ onToggle }) => {
       <label className="switch-label" onClick={toggleSwitch}>
         <span className="switch-button" />
       </label>
-      <span className="switch-text"></span>
     </div>
   );
 };

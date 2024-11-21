@@ -1,5 +1,6 @@
---- A simple wrapper around SendNUIMessage that you can use to
---- dispatch actions to the React frame.
+local ServerCallback = {}
+Utils                = {}
+Client               = {}
 ---
 ---@param action string The action you wish to target
 ---@param data any The data you wish to send along with this action
@@ -10,27 +11,41 @@ function SendReactMessage(action, data)
   })
 end
 
-local currentResourceName = GetCurrentResourceName()
-
-local debugIsEnabled = GetConvarInt(('%s-debugMode'):format(currentResourceName), 0) == 1
-
---- A simple debug print function that is dependent on a convar
---- will output a nice prettfied message if debugMode is on
-function debugPrint(...)
-  if not debugIsEnabled then return end
-  local args <const> = { ... }
-
-  local appendStr = ''
-  for _, v in ipairs(args) do
-    appendStr = appendStr .. ' ' .. tostring(v)
-  end
-  local msgTemplate = '^3[%s]^0%s'
-  local finalMsg = msgTemplate:format(currentResourceName, appendStr)
-  print(finalMsg)
+function TriggerCallback(name, cb, ...)
+  ServerCallback[name] = cb
+  TriggerServerEvent('elz_scripts:server:triggerCallback', name, ...)
 end
 
-Utils = {}
-Client = {}
+RegisterNetEvent('elz_scripts:client:triggerCallback', function(name, ...)
+  if ServerCallback[name] then
+    ServerCallback[name](...)
+    ServerCallback[name] = nil
+  end
+end)
+
+Utils.TextUi              = function(text)
+  SendReactMessage('setTextUI', {
+    visible = true,
+    message = text
+  })
+end
+
+Utils.HideTextUi          = function()
+  SendReactMessage('setTextUI', {
+    visible = false
+  })
+end
+
+Utils.Notification        = function(msg)
+  SendReactMessage('setNotification', {
+    visible = true,
+    message = msg
+  })
+end
+
+Utils.setClipBoard        = function(value)
+  SendReactMessage('setClipBoard', value)
+end
 
 Utils.toggleLastEntitySet = function()
   if LastEntitySet ~= nil then
@@ -44,7 +59,14 @@ Utils.toggleLastEntitySet = function()
   end
 end
 
-Utils.drawText = function(string, coords)
+Utils.LoadModel           = function(model)
+  while not HasModelLoaded(model) do
+    RequestModel(model)
+    Wait(0)
+  end
+end
+
+Utils.drawText            = function(string, coords)
   SetTextFont(0)
   SetTextProportional(1)
   SetTextScale(0.36, 0.36)
@@ -56,15 +78,14 @@ Utils.drawText = function(string, coords)
   SetTextRightJustify(false)
   SetTextWrap(0, 0.55)
   SetTextEntry('STRING')
-
   AddTextComponentString(string)
   DrawText(coords.x, coords.y)
 end
 
-Utils.setTimecycle = function(timecycle, roomId)
+Utils.setTimecycle        = function(timecycle, roomId)
   if Client.interiorId ~= 0 then
     if not roomId then
-      local roomHash = GetRoomKeyFromEntity(cache.ped)
+      local roomHash = GetRoomKeyFromEntity(PlayerPedId())
       roomId = GetInteriorRoomIndexByHash(Client.interiorId, roomHash)
     end
 
@@ -100,7 +121,7 @@ Utils.setTimecycle = function(timecycle, roomId)
   end
 end
 
-Utils.Draw3DText = function(DrawCoords, text)
+Utils.Draw3DText          = function(DrawCoords, text)
   local onScreen, _x, _y = GetScreenCoordFromWorldCoord(DrawCoords.x, DrawCoords.y, DrawCoords.z)
   local px, py, pz = table.unpack(GetFinalRenderedCamCoord())
   local dist = #(vec3(px, py, pz) - vec3(DrawCoords.x, DrawCoords.y, DrawCoords.z))
@@ -122,10 +143,17 @@ Utils.Draw3DText = function(DrawCoords, text)
   end
 end
 
-Utils.setTimecycle = function(timecycle, roomId)
+Utils.requestAnimDict     = function(dict)
+  RequestAnimDict(dict)
+  while not HasAnimDictLoaded(dict) do
+    Wait(100)
+  end
+end
+
+Utils.setTimecycle        = function(timecycle, roomId)
   if Client.interiorId ~= 0 then
     if not roomId then
-      local roomHash = GetRoomKeyFromEntity(cache.ped)
+      local roomHash = GetRoomKeyFromEntity(PlayerPedId())
       roomId = GetInteriorRoomIndexByHash(Client.interiorId, roomHash)
     end
 
@@ -137,7 +165,7 @@ Utils.setTimecycle = function(timecycle, roomId)
   end
 end
 
-Utils.setPortalFlag = function(portal, flag)
+Utils.setPortalFlag       = function(portal, flag)
   if Client.interiorId ~= 0 then
     local portalIndex = tonumber(portal)
     local newFlag = tonumber(flag)
@@ -147,8 +175,8 @@ Utils.setPortalFlag = function(portal, flag)
   end
 end
 
-Utils.setRoomFlag = function(flag)
-  local playerPed = cache.ped
+Utils.setRoomFlag         = function(flag)
+  local playerPed = PlayerPedId()
   local roomHash = GetRoomKeyFromEntity(playerPed)
   local roomId = GetInteriorRoomIndexByHash(Client.interiorId, roomHash)
 
@@ -160,7 +188,7 @@ Utils.setRoomFlag = function(flag)
   end
 end
 
-Utils.enableEntitySet = function(value)
+Utils.enableEntitySet     = function(value)
   if IsInteriorEntitySetActive(Client.interiorId, value) then
     DeactivateInteriorEntitySet(Client.interiorId, value)
     LastEntitySet = value

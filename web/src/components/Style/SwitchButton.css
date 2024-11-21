@@ -1,6 +1,7 @@
 .switch-container {
   display: flex;
   align-items: center;
+  margin-right: 1rem;
 }
 
 .switch {
@@ -8,10 +9,11 @@
 }
 
 .switch-label {
+
   display: inline-block;
   width: 50px;
   height: 25px;
-  background-color: #0e0f13; 
+  background-color: #141519; 
   border-radius: 25px;
   position: relative;
   cursor: pointer;

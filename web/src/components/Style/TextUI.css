@@ -1,0 +1,40 @@
+.text-ui-container {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  z-index: 999;
+  background-color: rgba(233, 0, 97, 0.7);
+  padding: 30px;
+  border-radius: 5px;
+  color: white;
+  white-space: pre-wrap;
+  font-family: Arial, sans-serif;
+}
+
+.text-ui-content .key {
+  display: inline-block;
+  background-color: white;
+  color: black;
+  padding: 2px 5px;
+  border-radius: 3px;
+  margin-right: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+.text-ui-content {
+  white-space: pre-wrap; 
+  font-size: 14px;
+}
+
+.text-ui-container.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.text-ui-container.hidden {
+  opacity: 0;
+  visibility: hidden;
+}

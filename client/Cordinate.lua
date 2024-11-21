@@ -1,8 +1,9 @@
 RegisterNUICallback('getCoords', function(data, cb)
     if data.type == 'coordinates' then
-        lib.setClipboard('vec3(' .. data.cordinat .. ')')
+        Utils.setClipBoard('vec3(' .. data.cordinat .. ')')
     else
-        lib.setClipboard(data.cordinat)
+        Utils.setClipBoard(data.cordinat)
     end
+    Utils.Notification('Copied to clipboard')
     cb({ cordinat = GetEntityCoords(PlayerPedId()) })
 end)

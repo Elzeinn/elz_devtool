@@ -1,7 +1,10 @@
 local pedGizmo
+local setGizmo = false
+local dataPed = {}
 
 RegisterNuiCallback('addPedData', function(data, cb)
-    local coords, heading = GetEntityCoords(cache.ped), GetEntityHeading(cache.ped)
+    local coords, rotation, heading = GetEntityCoords(PlayerPedId()), GetEntityRotation(PlayerPedId()),
+        GetEntityHeading(PlayerPedId())
     local dataPed = {
         position = {
             coords = {
@@ -10,9 +13,9 @@ RegisterNuiCallback('addPedData', function(data, cb)
                 z = string.format("%.4f", coords.z),
             },
             rotation = {
-                x = string.format("%.4f", heading),
-                y = string.format("%.4f", heading),
-                z = string.format("%.4f", heading),
+                x = string.format("%.4f", rotation.x),
+                y = string.format("%.4f", rotation.y),
+                z = string.format("%.4f", rotation.z),
             }
         },
         heading = string.format("%.4f", heading),
@@ -23,13 +26,15 @@ RegisterNuiCallback('addPedData', function(data, cb)
 end)
 
 RegisterNuiCallback('showGizmo', function(data, cb)
+    if setGizmo then
+        return print('dont show gizmo')
+    end
     local model = tostring(data.model)
-    local offset = GetEntityCoords(cache.ped) + GetEntityForwardVector(cache.ped) * 3
-    lib.requestModel(model)
+    local offset = GetEntityCoords(PlayerPedId()) + GetEntityForwardVector(PlayerPedId()) * 3
+    Utils.LoadModel(model)
     pedGizmo = CreatePed(4, model, offset.x, offset.y, offset.z - 1, 0, false, true)
     FreezeEntityPosition(pedGizmo, true)
     SetEntityInvincible(pedGizmo, true)
-    SetEntityCollision(pedGizmo, false, false)
     SetEntityAsMissionEntity(pedGizmo, true, true)
     SetModelAsNoLongerNeeded(model)
     SetBlockingOfNonTemporaryEvents(pedGizmo, true)
@@ -43,14 +48,26 @@ RegisterNuiCallback('showGizmo', function(data, cb)
     SetPedGravity(pedGizmo, false)
     ClearPedTasksImmediately(pedGizmo)
     SetEntityCollision(pedGizmo, false, true)
+    setGizmo = true
     local gizmo = useGizmo(pedGizmo)
-    SendReactMessage('getPedPosition', { position = gizmo.position, rotation = gizmo.rotation, model = model })
-    print(json.encode(gizmo, { indent = true }))
-    cb(gizmo)
+    setGizmo = false
+    SendReactMessage('getPedPosition',
+        { position = gizmo.position, rotation = gizmo.rotation, model = model, handle = gizmo.handle })
+    dataPed[#dataPed + 1] = {
+        position = gizmo.position,
+        rotation = gizmo.rotation,
+        model = model,
+        handle = gizmo.handle
+    }
+    cb('ok')
+end)
+
+RegisterNuiCallback('deletePed', function(data, cb)
+    cb('ok')
 end)
 
 RegisterNuiCallback('applyPedChanges', function(data, cb)
-    local coords, heading = GetEntityCoords(cache.ped), GetEntityHeading(cache.ped)
+    local coords, heading = GetEntityCoords(PlayerPedId()), GetEntityHeading(PlayerPedId())
     local dataPed = {
         position = {
             coords = {
@@ -75,10 +92,7 @@ RegisterNuiCallback('applyPedChanges', function(data, cb)
     cb(dataPed)
     if data.ped.animation.dict ~= "" and data.ped.animation.clip ~= "" then
         if pedGizmo and DoesEntityExist(pedGizmo) then
-            RequestAnimDict(data.ped.animation.dict)
-            while not HasAnimDictLoaded(data.ped.animation.dict) do
-                Wait(100)
-            end
+            Utils.requestAnimDict(data.ped.animation.dict)
             TaskPlayAnim(
                 pedGizmo,
                 data.ped.animation.dict,
@@ -97,5 +111,7 @@ RegisterNuiCallback('applyPedChanges', function(data, cb)
 end)
 
 RegisterNuiCallback('copyDataPed', function(data, cb)
-    lib.setClipboard(data)
+    Utils.setClipBoard(data)
+    Utils.Notification('Copied to clipboard')
+    cb('ok')
 end)

@@ -1,87 +1,248 @@
-.ped-spawner-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative; 
-    padding-bottom: 0.5rem; 
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); 
+    }
 }
 
-.ped-spawner-header i {
-    position: absolute; 
-    top: 0; 
-    right: 0; 
+
+.ped-spawner {
+    color: white;
+    max-height: 600px; 
+    overflow-y: auto;  
+    padding-right: 5px; 
+    scrollbar-width: thin;
+    scrollbar-color: #FF1A35 #0F1014;
+}
+
+.ped-spawner::-webkit-scrollbar {
+    width: 8px; 
+}
+
+.ped-spawner::-webkit-scrollbar-thumb {
+    background-color: #FF1A35 ;
+    border-radius: 4px;
+}
+
+
+.ped-spawner::-webkit-scrollbar-thumb:hover {
+    background-color: #FF1A35 ;
+}
+
+.ped-spawner::-webkit-scrollbar-track {
+    background-color: #FF1A35 ; 
+    border-radius: 4px; 
+}
+
+
+.ped-spawner-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0F1014;
+    height: 55px;
+    animation: slideDown 0.8s ease forwards; 
+    
+}
+
+.ped-spawner-header h1{
+    text-align: center;
+    font-size: 1rem;
+    margin: 0;
+    margin-left: 1rem;
+    width: 100%;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    text-align: start;
+    position: relative;
+}
+
+.modelDataValue {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 35px;
+    background-color: #0F1014;
+    border: 2px solid #131418;
+    width: 189px;
+    color: #fff;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
     margin-right: 1rem;
+    animation: slideDown 0.8s ease forwards; 
+}
+
+.rotation-ped-value {
+    margin-right: 1rem;
+}
+
+.rotation-value {
+    display: flex;
+}
+
+
+.rotation {
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-around;
+    height: 30px;
+    width: 76px;
+    border-radius: 5px;
+    background-color: #111216;
+    animation: slideDown 0.8s ease forwards; 
+}
+
+.rotation p {
+    margin-left: 5px;
+    font-size: 12px;
+}
+
+.rotation img {
     cursor: pointer;
+    margin-right: 5px;
+}
+
+
+.modelDataValue p {
+    margin-left: 1rem;
+}
+
+.ped-data-value {
+
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #111216;
+    padding: 0.5rem;
+    border-radius: 4px;
+    color: #fff;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    margin-right: 1rem;
+}
+
+.ped-data-value img{
+    cursor: pointer;
+}
+
+.ped-spawner-header img {
+    margin-left: 2rem;
+    font-size: 15px;
 }
 
 .data-ped-container {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
+    gap: 3px;
+    margin-top: 1.5px;
 }
+
+.title-ped {
+    font-size: 14px;
+}
+
 
 .data-ped-container i {
     font-size: 14px;
-    color: #ffffff;
     cursor: pointer;
+
 }
 
 .pedArrow {
     display: flex;
-    margin-top: -3rem;
     justify-content: end;
     align-items: end;    
     position: relative;
     margin-right: 1rem;
+    color: #525560;
 }
 
 .pedTrash {
-    position: absolute;
-    left: 27%;
-    top: 20.5%;
-    transform: translate(-50%, -50%);
     margin-right: 1rem;
     cursor: pointer;
-  
 }
 
 .data-ped-container h1 {
     color: white;
     font-family: sans-serif;
-    font-size: 1.2rem;
+    font-size: 14px;
     margin-left: 1rem;
-}
-
-.data-ped-card {
-    display: flex;
-    flex-direction: column;
-    background-color: #333;
-    padding: 1.5rem;
-    border-radius: 8px;
-    width: 100%;
-    margin-top: 1rem;
 }
 
 .ped-data-info {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 3px;
+
 }
 
 .ped-data-item {
+    animation: slideDown 0.8s ease forwards; 
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
+    height: 58px;
+    padding-bottom: 1px;
+    background-color: #0B0C10;
     border-radius: 4px;
     color: white;
+
 }
 
 .ped-data-item label {
-    font-size: 1rem;
-    color: #999;
-    margin-right: auto; 
+    font-size: 13px;
+    color: #525560;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+}
+
+.ped-data-info label {
+    font-size: 13px;
+    color: #525560;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    margin-left: 2rem;
+}
+
+.animation-label {
+    position: relative;
+    top: 0;
+    font-size: 13px;
+    color: #525560;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+}
+
+.prop-tools-model-animation {
+    display: flex;
+    align-items: center;
+    height: 70px;
+}
+
+
+.ped-data-info input {
+    background: #0e0f13;
+    outline: none; 
+    color: white;
+    text-align: start;
+    margin-left: 2.5rem;
+    border: 2px solid #3a3a3a27;
+    height: 15px;
+    margin-right: -1rem;
+
+}
+
+.ped-data-info ::placeholder {
+    color: white;
 }
 
 .ped-data-item div {
@@ -91,41 +252,79 @@
 }
 
 .ped-data-item i {
-    font-size: 18px;
-    color: #FF1A35;
     cursor: pointer;
+    color: #525560;
+    transition: color 0.3s ease;
+}
+
+.ped-data-item i:hover {
+    color: #fff;
 }
 
 .ped-spawner-buttons {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-top: 1.5rem;
 }
 
 .ped-spawner-buttons button {
-    background-color: #FF1A35;
     color: white;
-    padding: 0.75rem 2rem;
+    padding: 1rem 2rem;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
+    width: 50%;
+
 }
 
-.ped-spawner-buttons button:hover {
+.ped-spawner-buttons i {
+    margin-right: 0.5rem;
+}
+
+.apply-changes-btn {
+
+    background-color: #FF1A35;
+}
+
+.apply-changes-btn:hover {
     background-color: #A01F2E;
 }
 
+.show-gizmo-btn {
+    background-color: #0e0f13
+}
+
+.show-gizmo-btn:hover {
+    background-color: #181818;
+}
+
+
+
 #create-ped {
-    background-color: #FF1A35;
+    border: none;
+    background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
     color: white;
-    padding: 1rem;
-    border-radius: 4px;
+    height: 56px;
+    text-align: start;
     cursor: pointer;
-    width: 100%;
+    width: 25.8%;
     margin-top: 1rem;
+    bottom: 0;
+    margin-bottom: 1rem;
+    position: absolute;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+
+}
+
+#create-ped i {
+    font-size: 16px;
+    margin-left: 1rem;
+}
+
+.crtPed {
+    margin-right: 10rem;
 }
 
 #create-ped:hover {
-    background-color: #A01F2E;
+    background: linear-gradient(180.67deg, #a71021 27.47%, #A01F2E 99.42%);
+
 }

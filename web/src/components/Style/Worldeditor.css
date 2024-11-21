@@ -1,46 +1,55 @@
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); 
+    }
+}
+
 .World-Editor {
     display: flex;
     flex-direction: column;
-    padding: 1rem;
     border-radius: 8px;
     color: white;
 }
 
 .World-Editor-header {
     width: 100%;
-    margin-left: -1rem;
     display: flex;
     align-items: center;
-    background: #0F1014;
-    height: 4rem;
+    background-color: #0D0E12;
+    height: 55px;
+    margin-bottom: 0.1rem;
+    animation: slideDown 0.8s ease forwards;
 }
 
-.World-Editor i {
-    margin-left: 1.5rem;
-    font-size: 24px;
+.World-Editor img {
+    margin-left: 1.8rem;
+    font-size: 15px;
 }
 
-.worldeditorPrimary {
-    color: #FF1A35;
-}
 
 .World-Editor-header h1 {
-    font-family: sans-serif;
-    font-size: 1rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
     color: white;
-    margin-left: 2rem;  
+    margin-left: 1rem;  
 }
 .data-world {
-    display: flex;
-    flex-direction: column; 
-    gap: 1rem; 
+    gap: 1rem;
     max-height: 600px;
-    overflow-y: auto; 
-    overflow-x: hidden; 
-    padding-right: 1rem;
-    width: 100%; 
-    scrollbar-width: thin; 
-    scrollbar-color: #FF1A35 #0F1014; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0;
+    width: 100%;
+
+    scrollbar-width: thin;
+    scrollbar-color: #FF1A35 #0F1014;
+    box-sizing: border-box; 
 }
 
 .data-world::-webkit-scrollbar {
@@ -48,62 +57,78 @@
 }
 
 .data-world::-webkit-scrollbar-track {
-    background: #0F1014; 
+    background: #0F1014;
 }
 
 .data-world::-webkit-scrollbar-thumb {
-    background-color: #FF1A35; 
-    border-radius: 6px;
+    background-color: #FF1A35;
+    border-radius: 3px;
     border: 3px solid #0F1014;
 }
 
 
 .card {
+    animation: slideDown 0.8s ease forwards;
     display: flex;
     justify-content: space-between; 
     align-items: center;
     width: 100%;
-    padding: 1rem;
-
-    margin-left: -0.5rem;
-    
+    height: 70px;
+    background-color: #0D0E12;
+    position: relative;
+    margin-top: 0.1rem;
 }
 
 .card h1 {
-    font-family: sans-serif;
-    font-size: 1rem;
-    color: white;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: #FFFFFF;
     margin: 0; 
+    margin-left: 2rem;
 }
 
 .card-icon {
     display: flex;
     justify-content: flex-end;
+    margin-right: 1rem;
+
 }
 
-.card-icon i {
+.card-icon img {
     margin-left: 1rem;
-    font-size: 14px;
-    padding: 0.3rem;
+    font-size: 18px;
+    padding: 0.5rem;
     cursor: pointer;
+    background-color: #131418;
+    border: 1px solid #3a3a3a6b;
 }
 
 /* Styling untuk tombol */
 .create-preset {
-    position: relative;
-    top: 80%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #FF1A35; 
-    color: white; 
-    padding: 1.5rem; 
-    cursor: pointer; 
-    margin-top: 4.6rem; 
-    width: 100%; 
+    position: absolute;
+    bottom: 0;
+    width: 25.8%;
+    background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
+    color: white;
+    height: 56px;
+    cursor: pointer;
+    text-align: start;
+    margin-bottom: 1rem;
+    border: none;
+    transition: transform 0.2s ease;
 }
 
 .create-preset:hover {
-    background-color: #A01F2E; 
+    transform: scale(1.05); 
+    background-color: #A01F2E;
+}
+
+
+
+.create-preset i {
+    margin-left: 1rem;
+    padding-right: 1rem;
 }
 
 .seperator {
@@ -113,25 +138,72 @@
 }
 
 .edit-container .card h1 {
-    font-family: sans-serif;
-    font-size: 1rem;
+     font-family: 'SF Pro Display', sans-serif;
+    font-size: 16px;
     color: white;
+    font-weight: 700;
     margin: 0;
-    margin-left: 0.5rem;
+
+}
+
+.edit-container .card input{
+    border: 1px solid #3a3a3a;
+    background: #131418;
+    outline: none; 
+    padding: 0.9rem;
+    color: white;
+    text-align: start;
+    width: 100%;
+  
 }
 
 .CardEdit {
+    animation: slideDown 0.8s ease forwards;
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%;
+    height: 50px;
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    
+
+}
+
+.CardEdit input {
+    border: 2px solid #131418;
     background-color: #0F1014;
-    width: 93%;
+    outline: none; 
+    padding: 0.9rem;
+    color: white;
+    text-align: start;
+    width: 400px;
+    margin-left: 1.5rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+}
+
+.CardEdit ::placeholder {
+    color: white;
+    font-family: 'SF Pro Display', sans-serif;
+       font-weight: 500;
 }
 
 .edit-title {
-   margin-top: 1rem;
+    margin-top: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 93%;
     margin-left: -0.5rem;
+}
+
+.edit-title h1 {
+      font-family: 'SF Pro Display', sans-serif;
+    font-size: 16px;
+    color: white; 
+    margin-left: 2rem;
 }
 
 .edit-title i {
@@ -142,19 +214,21 @@
 }
 
 .edit-card {
-    margin-top: 1rem;
+    animation: slideDown 0.8s ease forwards;
+    margin-top: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 93%;
-    padding: 1rem;
+    width: 86.7%;
+    height: 50px;
     background-color: #0F1014;
-    margin-left: -0px;
+    margin-left: 1.3rem;
+    border: 2px solid #131418;
 
 }
 
 .edit-card-container {
-    max-height: 600px;
+    max-height: 500px;
     overflow-y: auto; 
     overflow-x: hidden; 
     scrollbar-width: thin; 
@@ -162,7 +236,7 @@
 }
 
 .edit-card-container::-webkit-scrollbar {
-    width: 1px;
+    width: 10px;
 }
 
 .edit-card-container:-webkit-scrollbar-track {
@@ -171,43 +245,97 @@
 
 .edit-card-container:-webkit-scrollbar-thumb {
     background-color: #FF1A35; 
-    border-radius: 1px;
-    border: 1px solid #0F1014;
+    border-radius: 3px;
+    border: 3px solid #0F1014;
 }
 
 .edit-card h1 {
-    font-family: sans-serif;
-    font-size: 1rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 13px;
     color: white;
     margin: 0; 
-    margin-left: 0.5rem;
+    margin-left: 1rem;
+    font-weight: 500;
 }
 
 .edit-card-icon {
     display: flex;
     justify-content: flex-end;
+    margin-right: 10px;
 }
 
-.edit-card-icon i {
-    margin-left: 1rem;
-    font-size: 14px;
-    padding: 0.3rem;
+.plusEdit {
+    position: absolute;
+    left: 85%;
     cursor: pointer;
 }
 
-.edit-card-icon i:hover {
+.edit-card-icon img {
+    color: #525560;
+    margin-left: 0.7rem;
+    font-size: 18px;
+    padding: 0.5rem;
+    cursor: pointer;
+    border: 1px solid #1f1f1f;
+}
+
+.edit-card-icon img:hover {
     color: #FF1A35;;
+    
 }
 
-.editor-btn button {
-    position: relative;
-    background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
+.editor-btn {
+    position: absolute;
+    bottom: 0;
+    width: 26%;
     color: white;
-    padding: 1rem;;
- 
     cursor: pointer;
-    width: 50%;
+    text-align: start;
+    margin-bottom: 1.4em;
+    transition: transform 0.2s ease;
+       
 }
-.editor-btn button:hover {
-    background: linear-gradient(180.67deg, #A01F2E 27.47%, #FF1A35 99.42%);
+
+.editor-btn .saveJson {
+    border: none;
+    color: white;
+    height: 56px;
+    width: 247px;
+    background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.editor-btn .saveJson:hover {
+    transform: scale(1.05); 
+    background: linear-gradient(180.67deg, #ff1a3563 27.47%, #A01F2E 99.42%);
+}
+
+
+.editor-btn i {
+    position: absolute;
+    margin-left: -4rem;
+}
+
+
+.editor-btn img {
+    position: absolute;
+    margin-left: -4rem;
+}
+
+
+.editor-btn .cancel {
+    color: white;
+    height: 56px;
+    width: 247px;
+    background-color:#0F1014;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+
+.editor-btn .cancel:hover {
+    transform: scale(1.05); 
+    background-color: #181717;;
 }

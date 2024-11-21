@@ -4,7 +4,7 @@ import { fetchNui } from '../../utils/fetchNui';
 
 function InputForm({ onSubmit }) {  
     const [formData, setFormData] = useState({
-        name: 'TES',
+        name: 'Elzein',
         model: 'mp_m_freemode_01'
     });
 
@@ -49,7 +49,7 @@ function InputForm({ onSubmit }) {
                         required 
                     />
                 </div>
-                <button type="submit">Submit</button>
+                <button type="submit">Add New Ped</button>
             </form>
         </div>
     );

@@ -1,68 +1,138 @@
-.coordinate-container {
-    padding: 1rem;
-    border-radius: 8px;
-    color: white;
-}
-.menu-container {
-    padding: 1rem;
-    border-radius: 8px;
-    color: white;
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); 
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); 
+    }
 }
 
-.home-primary {
-    color: #FF1A35;
-    font-size: 22px;
+.coordinate-container, .menu-container {
+    border-radius: 8px;
+    color: white;
 }
 
 .home-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
+    height: 55px;
+    width: 100%;
+    background-color: #0F1014;
     cursor: pointer;
+    animation: slideDown 0.8s ease forwards;
 }
 
 .home-header h1 {
-    text-align: center;
-    font-size: 1rem;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'SF Pro Display', sans-serif;
     margin: 0;
-    margin-left: 1rem;
-    width: 100%;
+    width: 80%;
+    text-align: start;
+    margin-left: 30px;
 }
 
-.coordinates-info,
-.time-weather-info {
-    margin-top: 1rem;
+.home-header img {
+    margin-left: 2rem;
 }
 
-.coordinate-item,
-.time-weather-item {
+.home-primary {
+    color: #FF1A35;
+    font-size: 15px;
+}
+
+.home-header i {
+    margin-right: 1.5rem;
+}
+
+.coordinates-info, .time-weather-info {
+    margin-bottom: 1rem;
+}
+
+.coordinate-item, .time-weather-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
+    animation: slideDown 0.8s ease forwards;
+ 
 }
 
-.coordinate-value,
-.time-setting,
-.weather-setting {
+.setBackground {
+    height: 58px;
+    background-color: #0B0C10;
+}
+
+.setHeading {
+   height: 40px;
+}
+
+
+.freezeTime {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #0D0E12;
+    height: 60px;
+    animation: slideDown 0.8s ease forwards; 
+}
+
+.freezeWeather {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    animation: slideDown 0.8s ease forwards;
+}
+
+.setTime {
+    background-color: #0D0E12;
+    height: 60px;
+}
+
+
+.coordinate-value, .time-setting, .weather-setting {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+    
+}
+
+.home-header .timeWeather  {
+    margin-left: 67px;
+    position: absolute;
+}
+
+.home-header .coordinates {
+    margin-left: 22px;
+}
+
+.coordinate-value img {
+    cursor: pointer;
 }
 
 .apply-button {
     background: linear-gradient(180.67deg, #FF1A35 27.47%, #A01F2E 99.42%);
     color: white;
-    padding: 0.5rem 3rem;
+    width: 123px;
+    height: 40px;
     border: none;
-    border-radius: 3px;
+    border-radius: 2px;
     cursor: pointer;
+    margin-right: 1rem;
+    font-family: 'SF Pro Display', sans-serif;
+    font-weight: 500;
+    transition: transform 0.2s ease;
 }
 
 .apply-button:hover {
-    background-color: #e62e2e;
+    transform: scale(1.05); 
+    background: linear-gradient(180.67deg, #a01f2e 27.47%, #ff1a35 99.42%);
 }
 
 .weather-change {
@@ -73,31 +143,34 @@
     border-radius: 4px;
     cursor: pointer;
 }
-.coordinate-item label {
-    font-size: 1rem;
-    color: #999;
-    font-family: sans-serif;
-}
-.time-weather-info label {
-    font-size: 1rem;
-    color: #999;
-    font-family: sans-serif;
+
+.coordinate-item label, .time-weather-info label {
+    font-size: 13px;
+    color: #525560;
+    line-height: 17.9px;
+    font-family: 'SF Pro Display';
+    font-weight: 700;
+    margin-left: 2rem;
 }
 
 .coordinate-value {
+   
+    padding: 0.5rem;
+    background-color: #111216;
+
+    border-radius: 4px;
+    color: #fff;
+    font-family: 'SF Pro Display';
+    font-size: 13px;
+    margin-right: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #333;
-    padding: 0.5rem;
-    border-radius: 4px;
-    color: #fff;
-    font-family: sans-serif;
 }
 
 .copy-icon {
     cursor: pointer;
-    color: #aaa;
+    color: #525560;
     transition: color 0.3s ease;
 }
 
@@ -105,24 +178,33 @@
     color: #fff;
 }
 
-input {
-    background: #0e0f13;
-    outline: none;
-    color: white;
-    border: none;
+.arrow {
+    color: #525560;
+    margin-right: 1rem;
+    font-size: 10px;
+    transition: transform 0.3s ease; 
 }
 
-input:focus {
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+.time-weather-item input {
+    background: #101115;
+    color: white;
+    font-size: 13px;
+    height: 40px;
+    width: 45px;
+    font-family: 'SF Pro Display';
+    font-weight: 500;
+    border: none;
+    text-align: center;
     outline: none;
+    box-shadow: none;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
-}
-
-
-input[type="number"] {
-    -moz-appearance: textfield;
 }

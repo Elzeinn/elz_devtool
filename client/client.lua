@@ -1,4 +1,4 @@
-local function toggleNuiFrame(shouldShow)
+function toggleNuiFrame(shouldShow)
   SetNuiFocus(shouldShow, shouldShow)
   SendReactMessage('setVisible', shouldShow)
 end
@@ -24,29 +24,28 @@ RegisterCommand('show-nui', function()
     heading = data.heading
   })
 
-  SendReactMessage('getPreset', {
-    preset = lib.callback.await('elz_scripts:server:getPreset', false)
-  })
+  SendReactMessage('setPage', 'menuapps')
 
-  SendReactMessage('timeCycles', lib.callback.await('elz_script:server:getTimeCycle', false))
+  TriggerCallback('elz_scripts:server:getPreset', function(dataPreset)
+    SendReactMessage('getPreset', {
+      preset = dataPreset
+    })
+  end)
 
-  debugPrint('Show NUI frame')
-end)
+  TriggerCallback('elz_scripts:server:getTimeCycle', function(timeCycles)
+    SendReactMessage('timeCycles', timeCycles)
+  end)
+end, false)
 
 RegisterKeyMapping('show-nui', 'Show NUI frame', 'keyboard', 'H')
 
 RegisterNUICallback('hideFrame', function(_, cb)
-  toggleNuiFrame(false)
-  debugPrint('Hide NUI frame')
+  SetNuiFocus(false, false)
+  SendNUIMessage({ action = 'hideUI' })
   cb({})
 end)
 
-RegisterNUICallback('getClientData', function(data, cb)
-  debugPrint('Data sent by React', json.encode(data))
-
-  -- Lets send back client coords to the React frame for use
-  local curCoords = GetEntityCoords(PlayerPedId())
-
-  local retData <const> = { x = curCoords.x, y = curCoords.y, z = curCoords.z }
-  cb(retData)
-end)
+RegisterCommand('hide-nui', function()
+  SetNuiFocus(false, false)
+  SendNUIMessage({ action = 'hideUI' })
+end, false)

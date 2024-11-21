@@ -1,22 +1,29 @@
 .day-selector {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    height: 40px;
+    width: 155px;
+    border: 2px solid #101115;
 }
 
 .arrow-btn {
-  background-color: transparent;
-  border: none;
-  color: #525560;
-  cursor: pointer;
-  font-size: 0.7rem;
+    margin-left: 5px;
+    margin-right: 5px;
+    background-color: transparent;
+    border: none;
+    color: #525560;
+    cursor: pointer;
+    font-size: 0.6rem;
+}
+
+.arrow-btn:hover {
+    color: white;
 }
 
 .selected-day {
-    font-size: 1rem;
-    font-family: sans-serif;
+    font-size: 13px;
+    font-family: 'SF Pro Display';
+    font-weight: 500;
 }

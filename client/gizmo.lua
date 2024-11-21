@@ -1,10 +1,162 @@
--- CREDITS
--- Andyyy7666: https://github.com/overextended/ox_lib/pull/453
--- AvarianKnight: https://forum.cfx.re/t/allow-drawgizmo-to-be-used-outside-of-fxdk/5091845/8?u=demi-automatic
+dataView = setmetatable({
+    EndBig = ">",
+    EndLittle = "<",
+    Types = {
+        Int8 = { code = "i1" },
+        Uint8 = { code = "I1" },
+        Int16 = { code = "i2" },
+        Uint16 = { code = "I2" },
+        Int32 = { code = "i4" },
+        Uint32 = { code = "I4" },
+        Int64 = { code = "i8" },
+        Uint64 = { code = "I8" },
+        Float32 = { code = "f", size = 4 },  -- a float (native size)
+        Float64 = { code = "d", size = 8 },  -- a double (native size)
 
-local dataview = require 'client.dataview'
+        LuaInt = { code = "j" },             -- a lua_Integer
+        UluaInt = { code = "J" },            -- a lua_Unsigned
+        LuaNum = { code = "n" },             -- a lua_Number
+        String = { code = "z", size = -1, }, -- zero terminated string
+    },
 
-local enableScale = false -- allow scaling mode. doesnt scale collisions and resets when physics are applied it seems
+    FixedTypes = {
+        String = { code = "c" }, -- a fixed-sized string with n bytes
+        Int = { code = "i" },    -- a signed int with n bytes
+        Uint = { code = "I" },   -- an unsigned int with n bytes
+    },
+}, {
+    __call = function(_, length)
+        return dataView.ArrayBuffer(length)
+    end
+})
+dataView.__index = dataView
+
+--[[ Create an ArrayBuffer with a size in bytes --]]
+function dataView.ArrayBuffer(length)
+    return setmetatable({
+        blob = string.blob(length),
+        length = length,
+        offset = 1,
+        cangrow = true,
+    }, dataView)
+end
+
+--[[ Wrap a non-internalized string --]]
+function dataView.Wrap(blob)
+    return setmetatable({
+        blob = blob,
+        length = blob:len(),
+        offset = 1,
+        cangrow = true,
+    }, dataView)
+end
+
+--[[ Return the underlying bytebuffer --]]
+function dataView:Buffer() return self.blob end
+
+function dataView:ByteLength() return self.length end
+
+function dataView:ByteOffset() return self.offset end
+
+function dataView:SubView(offset, length)
+    return setmetatable({
+        blob = self.blob,
+        length = length or self.length,
+        offset = 1 + offset,
+        cangrow = false,
+    }, dataView)
+end
+
+--[[ Return the Endianness format character --]]
+local function ef(big) return (big and dataView.EndBig) or dataView.EndLittle end
+
+--[[ Helper function for setting fixed datatypes within a buffer --]]
+local function packblob(self, offset, value, code)
+    -- If cangrow is false the dataview represents a subview, i.e., a subset
+    -- of some other string view. Ensure the references are the same before
+    -- updating the subview
+    local packed = self.blob:blob_pack(offset, code, value)
+    if self.cangrow or packed == self.blob then
+        self.blob = packed
+        self.length = packed:len()
+        return true
+    else
+        return false
+    end
+end
+
+--[[
+    Create the API by using dataView.Types
+--]]
+for label, datatype in pairs(dataView.Types) do
+    if not datatype.size then -- cache fixed encoding size
+        datatype.size = string.packsize(datatype.code)
+    elseif datatype.size >= 0 and string.packsize(datatype.code) ~= datatype.size then
+        local msg = "Pack size of %s (%d) does not match cached length: (%d)"
+        error(msg:format(label, string.packsize(datatype.code), datatype.size))
+        return nil
+    end
+
+    dataView["Get" .. label] = function(self, offset, endian)
+        offset = offset or 0
+        if offset >= 0 then
+            local o = self.offset + offset
+            local v, _ = self.blob:blob_unpack(o, ef(endian) .. datatype.code)
+            return v
+        end
+        return nil
+    end
+
+    dataView["Set" .. label] = function(self, offset, value, endian)
+        if offset >= 0 and value then
+            local o = self.offset + offset
+            local v_size = (datatype.size < 0 and value:len()) or datatype.size
+            if self.cangrow or ((o + (v_size - 1)) <= self.length) then
+                if not packblob(self, o, value, ef(endian) .. datatype.code) then
+                    error("cannot grow subview")
+                end
+            else
+                error("cannot grow dataview")
+            end
+        end
+        return self
+    end
+end
+
+for label, datatype in pairs(dataView.FixedTypes) do
+    datatype.size = -1 -- Ensure cached encoding size is invalidated
+
+    dataView["GetFixed" .. label] = function(self, offset, typelen, endian)
+        if offset >= 0 then
+            local o = self.offset + offset
+            if (o + (typelen - 1)) <= self.length then
+                local code = ef(endian) .. "c" .. tostring(typelen)
+                local v, _ = self.blob:blob_unpack(o, code)
+                return v
+            end
+        end
+        return nil -- Out of bounds
+    end
+
+    dataView["SetFixed" .. label] = function(self, offset, typelen, value, endian)
+        if offset >= 0 and value then
+            local o = self.offset + offset
+            if self.cangrow or ((o + (typelen - 1)) <= self.length) then
+                local code = ef(endian) .. "c" .. tostring(typelen)
+                if not packblob(self, o, value, code) then
+                    error("cannot grow subview")
+                end
+            else
+                error("cannot grow dataview")
+            end
+        end
+        return self
+    end
+end
+
+local dataview = dataView
+
+local enableScale = false
 
 local gizmoEnabled = false
 local currentMode = 'translate'
@@ -67,13 +219,26 @@ end
 
 -- LOOPS
 
+local modeStatus = false
+local function SetModeFocus()
+    if IsControlJustPressed(0, 38) then
+        if not modeStatus then
+            modeStatus = true
+            LeaveCursorMode()
+        else
+            modeStatus = false
+            EnterCursorMode()
+        end
+    end
+end
+
+
 local function gizmoLoop(entity)
     if not gizmoEnabled then
         return LeaveCursorMode()
     end
 
     EnterCursorMode()
-
     if IsEntityAPed(entity) then
         SetEntityAlpha(entity, 200)
     else
@@ -82,11 +247,11 @@ local function gizmoLoop(entity)
 
     while gizmoEnabled and DoesEntityExist(entity) do
         Wait(0)
-
+        SetModeFocus()
         DisableControlAction(0, 24, true)  -- lmb
         DisableControlAction(0, 25, true)  -- rmb
         DisableControlAction(0, 140, true) -- r
-        DisablePlayerFiring(cache.playerId, true)
+        DisablePlayerFiring(PlayerId(), true)
 
         local matrixBuffer = makeEntityMatrix(entity)
         local changed = Citizen.InvokeNative(0xEB2EDCA2, matrixBuffer:Buffer(), 'Editor1',
@@ -103,7 +268,7 @@ local function gizmoLoop(entity)
         if IsEntityAPed(entity) then SetEntityAlpha(entity, 255) end
         SetEntityDrawOutline(entity, false)
     end
-
+    modeStatus = false
     gizmoEnabled = false
     currentEntity = nil
 end
@@ -113,17 +278,19 @@ local function textUILoop()
         while gizmoEnabled do
             Wait(100)
             local scaleText = (enableScale and '[S]     - Scale Mode  \n') or ''
-            lib.showTextUI(
+
+            Utils.TextUi(
                 ('Current Mode: %s | %s  \n'):format(currentMode, (isRelative and 'Relative') or 'World') ..
                 '[W]     - Translate Mode  \n' ..
                 '[R]     - Rotate Mode  \n' ..
                 scaleText ..
                 '[Q]     - Relative/World  \n' ..
                 '[LALT]  - Snap To Ground  \n' ..
-                '[ENTER] - Done Editing  \n'
+                '[ENTER] - Done Editing  \n' ..
+                '[E] - Change Mode Focus'
             )
         end
-        lib.hideTextUI()
+        Utils.HideTextUi()
     end)
 end
 
@@ -144,96 +311,86 @@ end
 
 -- exports("useGizmo", useGizmo)
 
--- CONTROLS these execute the existing gizmo commands but allow me to add additional logic to update the mode display.
 
-lib.addKeybind({
-    name = '_gizmoSelect',
-    description = 'Selects the currently highlighted gizmo',
-    defaultMapper = 'MOUSE_BUTTON',
-    defaultKey = 'MOUSE_LEFT',
-    onPressed = function(self)
-        if not gizmoEnabled then return end
-        ExecuteCommand('+gizmoSelect')
-    end,
-    onReleased = function(self)
-        ExecuteCommand('-gizmoSelect')
-    end
-})
+-- Gizmo select
+RegisterCommand('+gizmoSelect', function()
+    if not gizmoEnabled then return end
+    -- Logic for selecting the gizmo
+    ExecuteCommand('+gizmoSelect')
+end, false)
 
-lib.addKeybind({
-    name = '_gizmoTranslation',
-    description = 'Sets mode of the gizmo to translation',
-    defaultKey = 'W',
-    onPressed = function(self)
-        if not gizmoEnabled then return end
-        currentMode = 'Translate'
-        ExecuteCommand('+gizmoTranslation')
-    end,
-    onReleased = function(self)
-        ExecuteCommand('-gizmoTranslation')
-    end
-})
+RegisterCommand('-gizmoSelect', function()
+    ExecuteCommand('-gizmoSelect')
+end, false)
 
-lib.addKeybind({
-    name = '_gizmoRotation',
-    description = 'Sets mode for the gizmo to rotation',
-    defaultKey = 'R',
-    onPressed = function(self)
-        if not gizmoEnabled then return end
-        currentMode = 'Rotate'
-        ExecuteCommand('+gizmoRotation')
-    end,
-    onReleased = function(self)
-        ExecuteCommand('-gizmoRotation')
-    end
-})
+RegisterKeyMapping('+gizmoSelect', 'Selects the currently highlighted gizmo', 'mouse_button', 'MOUSE_LEFT')
 
-lib.addKeybind({
-    name = '_gizmoLocal',
-    description = 'toggle gizmo to be local to the entity instead of world',
-    defaultKey = 'Q',
-    onPressed = function(self)
-        if not gizmoEnabled then return end
-        isRelative = not isRelative
-        ExecuteCommand('+gizmoLocal')
-    end,
-    onReleased = function(self)
-        ExecuteCommand('-gizmoLocal')
-    end
-})
+-- Gizmo translation mode
+RegisterCommand('+gizmoTranslation', function()
+    if not gizmoEnabled then return end
+    currentMode = 'Translate'
+    ExecuteCommand('+gizmoTranslation')
+end, false)
 
-lib.addKeybind({
-    name = 'gizmoclose',
-    description = 'close gizmo',
-    defaultKey = 'RETURN',
-    onPressed = function(self)
-        if not gizmoEnabled then return end
-        gizmoEnabled = false
-    end,
-})
+RegisterCommand('-gizmoTranslation', function()
+    ExecuteCommand('-gizmoTranslation')
+end, false)
 
-lib.addKeybind({
-    name = 'gizmoSnapToGround',
-    description = 'snap current gizmo object to floor/surface',
-    defaultKey = 'LMENU',
-    onPressed = function(self)
-        if not gizmoEnabled then return end
-        PlaceObjectOnGroundProperly_2(currentEntity)
-    end,
-})
+RegisterKeyMapping('+gizmoTranslation', 'Sets mode of the gizmo to translation', 'keyboard', 'W')
 
+-- Gizmo rotation mode
+RegisterCommand('+gizmoRotation', function()
+    if not gizmoEnabled then return end
+    currentMode = 'Rotate'
+    ExecuteCommand('+gizmoRotation')
+end, false)
+
+RegisterCommand('-gizmoRotation', function()
+    ExecuteCommand('-gizmoRotation')
+end, false)
+
+RegisterKeyMapping('+gizmoRotation', 'Sets mode for the gizmo to rotation', 'keyboard', 'R')
+
+-- Gizmo local/world toggle
+RegisterCommand('+gizmoLocal', function()
+    if not gizmoEnabled then return end
+    isRelative = not isRelative
+    ExecuteCommand('+gizmoLocal')
+end, false)
+
+RegisterCommand('-gizmoLocal', function()
+    ExecuteCommand('-gizmoLocal')
+end, false)
+
+RegisterKeyMapping('+gizmoLocal', 'Toggle gizmo to be local to the entity instead of world', 'keyboard', 'Q')
+
+-- Close gizmo
+RegisterCommand('gizmoclose', function()
+    if not gizmoEnabled then return end
+    gizmoEnabled = false
+end, false)
+
+RegisterKeyMapping('gizmoclose', 'Close gizmo', 'keyboard', 'RETURN')
+
+-- Snap object to ground
+RegisterCommand('gizmoSnapToGround', function()
+    if not gizmoEnabled then return end
+    PlaceObjectOnGroundProperly_2(currentEntity)
+end, false)
+
+RegisterKeyMapping('gizmoSnapToGround', 'Snap current gizmo object to floor/surface', 'keyboard', 'LMENU')
+
+-- Gizmo scale mode (conditional on enableScale being true)
 if enableScale then
-    lib.addKeybind({
-        name = '_gizmoScale',
-        description = 'Sets mode for the gizmo to scale',
-        defaultKey = 'S',
-        onPressed = function(self)
-            if not gizmoEnabled then return end
-            currentMode = 'Scale'
-            ExecuteCommand('+gizmoScale')
-        end,
-        onReleased = function(self)
-            ExecuteCommand('-gizmoScale')
-        end
-    })
+    RegisterCommand('+gizmoScale', function()
+        if not gizmoEnabled then return end
+        currentMode = 'Scale'
+        ExecuteCommand('+gizmoScale')
+    end, false)
+
+    RegisterCommand('-gizmoScale', function()
+        ExecuteCommand('-gizmoScale')
+    end, false)
+
+    RegisterKeyMapping('+gizmoScale', 'Sets mode for the gizmo to scale', 'keyboard', 'S')
 end
