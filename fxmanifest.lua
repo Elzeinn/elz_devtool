@@ -2,7 +2,7 @@ fx_version "cerulean"
 
 description "Project Dev Tools 17Movement"
 author "Elzein"
-version '1.0.0'
+version '1.1.0'
 lua54 'yes'
 game "gta5"
 
