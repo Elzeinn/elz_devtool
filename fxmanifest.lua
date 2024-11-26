@@ -1,6 +1,6 @@
 fx_version "cerulean"
 
-description "Project Dev Tools 17Movement"
+description "Projecat Dev Tools 17Movement"
 author "Elzein"
 version '1.1.0'
 lua54 'yes'
