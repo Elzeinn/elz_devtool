@@ -11,11 +11,13 @@ function SendReactMessage(action, data)
   })
 end
 
+---@param name string
 function TriggerCallback(name, cb, ...)
   ServerCallback[name] = cb
   TriggerServerEvent('elz_scripts:server:triggerCallback', name, ...)
 end
 
+---@param name string
 RegisterNetEvent('elz_scripts:client:triggerCallback', function(name, ...)
   if ServerCallback[name] then
     ServerCallback[name](...)
@@ -23,6 +25,7 @@ RegisterNetEvent('elz_scripts:client:triggerCallback', function(name, ...)
   end
 end)
 
+---@param text string
 Utils.TextUi              = function(text)
   SendReactMessage('setTextUI', {
     visible = true,
@@ -36,6 +39,7 @@ Utils.HideTextUi          = function()
   })
 end
 
+---@param msg string
 Utils.Notification        = function(msg)
   SendReactMessage('setNotification', {
     visible = true,
