@@ -47,6 +47,7 @@ Utils.Notification        = function(msg)
   })
 end
 
+---@param value string
 Utils.setClipBoard        = function(value)
   SendReactMessage('setClipBoard', value)
 end
