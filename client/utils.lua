@@ -64,6 +64,7 @@ Utils.toggleLastEntitySet = function()
   end
 end
 
+---@param model string
 Utils.LoadModel           = function(model)
   while not HasModelLoaded(model) do
     RequestModel(model)
