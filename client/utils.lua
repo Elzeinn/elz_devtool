@@ -72,6 +72,7 @@ Utils.LoadModel           = function(model)
   end
 end
 
+---@param string string
 Utils.drawText            = function(string, coords)
   SetTextFont(0)
   SetTextProportional(1)
