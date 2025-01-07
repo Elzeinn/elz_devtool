@@ -89,6 +89,7 @@ Utils.drawText            = function(string, coords)
   DrawText(coords.x, coords.y)
 end
 
+---@param roomId number
 Utils.setTimecycle        = function(timecycle, roomId)
   if Client.interiorId ~= 0 then
     if not roomId then
